@@ -1,0 +1,599 @@
+openapi: 3.1.0
+info:
+  title: Sydney Gig Planner API
+  version: 1.0.0
+  description: HTTP boundary for the Sydney Gig Planner frontend. All event data is fictional demonstration data.
+servers:
+  - url: /api/v1
+tags:
+  - name: Events
+  - name: Artists
+  - name: Venues
+  - name: User
+  - name: Favourites
+  - name: Weekend Plans
+paths:
+  /api/v1/events:
+    get:
+      tags: [Events]
+      operationId: listEvents
+      parameters:
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/Suburb"
+        - $ref: "#/components/parameters/VenueIdQuery"
+        - $ref: "#/components/parameters/ArtistIdQuery"
+        - $ref: "#/components/parameters/Genre"
+        - $ref: "#/components/parameters/Status"
+        - $ref: "#/components/parameters/From"
+        - $ref: "#/components/parameters/To"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/Sort"
+      responses:
+        "200":
+          description: A paged event list
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PagedEvents" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Events]
+      operationId: createEvent
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateEventRequest" }
+      responses:
+        "201":
+          description: Event created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Event" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalError" }
+  /api/v1/events/{eventId}:
+    parameters:
+      - $ref: "#/components/parameters/EventId"
+    get:
+      tags: [Events]
+      operationId: getEvent
+      responses:
+        "200":
+          description: Event details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Event" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Events]
+      operationId: updateEvent
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateEventRequest" }
+      responses:
+        "200":
+          description: Event updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Event" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Events]
+      operationId: deleteEvent
+      security: [{ bearerAuth: [] }]
+      responses:
+        "204": { description: Event deleted }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/artists:
+    get:
+      tags: [Artists]
+      operationId: listArtists
+      responses:
+        "200":
+          description: Artists
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ArtistSummary" }
+        "500": { $ref: "#/components/responses/InternalError" }
+  /api/v1/artists/{artistId}:
+    get:
+      tags: [Artists]
+      operationId: getArtist
+      parameters: [{ $ref: "#/components/parameters/ArtistIdPath" }]
+      responses:
+        "200":
+          description: Artist
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Artist" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/artists/{artistId}/events:
+    get:
+      tags: [Artists]
+      operationId: listArtistEvents
+      parameters: [{ $ref: "#/components/parameters/ArtistIdPath" }]
+      responses:
+        "200":
+          description: Artist events
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/EventSummary" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/venues:
+    get:
+      tags: [Venues]
+      operationId: listVenues
+      responses:
+        "200":
+          description: Venues
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/VenueSummary" }
+        "500": { $ref: "#/components/responses/InternalError" }
+  /api/v1/venues/{venueId}:
+    get:
+      tags: [Venues]
+      operationId: getVenue
+      parameters: [{ $ref: "#/components/parameters/VenueIdPath" }]
+      responses:
+        "200":
+          description: Venue
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Venue" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/venues/{venueId}/events:
+    get:
+      tags: [Venues]
+      operationId: listVenueEvents
+      parameters: [{ $ref: "#/components/parameters/VenueIdPath" }]
+      responses:
+        "200":
+          description: Venue events
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/EventSummary" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/me:
+    get:
+      tags: [User]
+      operationId: getCurrentUser
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CurrentUser" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/me/favourites:
+    get:
+      tags: [Favourites]
+      operationId: listFavourites
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Favourites
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Favourite" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Favourites]
+      operationId: addFavourite
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [eventId]
+              properties:
+                eventId: { type: string, format: uuid }
+      responses:
+        "201":
+          description: Favourite created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Favourite" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/me/favourites/{eventId}:
+    delete:
+      tags: [Favourites]
+      operationId: removeFavourite
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/EventId" }]
+      responses:
+        "204": { description: Favourite removed }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/me/plans/{weekend}:
+    get:
+      tags: [Weekend Plans]
+      operationId: getWeekendPlan
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/Weekend" }]
+      responses:
+        "200":
+          description: Weekend plan
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WeekendPlan" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/me/plans/{weekend}/events:
+    post:
+      tags: [Weekend Plans]
+      operationId: addWeekendPlanEntry
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/Weekend" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AddWeekendPlanEntryRequest" }
+      responses:
+        "201":
+          description: Plan entry created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WeekendPlanEntry" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/me/plans/{weekend}/events/{eventId}:
+    patch:
+      tags: [Weekend Plans]
+      operationId: updateWeekendPlanEntry
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/Weekend"
+        - $ref: "#/components/parameters/EventId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/UpdateWeekendPlanEntryRequest" }
+      responses:
+        "200":
+          description: Plan entry updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WeekendPlanEntry" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Weekend Plans]
+      operationId: removeWeekendPlanEntry
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: "#/components/parameters/Weekend"
+        - $ref: "#/components/parameters/EventId"
+      responses:
+        "204": { description: Plan entry removed }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    EventId:
+      {
+        name: eventId,
+        in: path,
+        required: true,
+        schema: { type: string, format: uuid },
+      }
+    ArtistIdPath:
+      {
+        name: artistId,
+        in: path,
+        required: true,
+        schema: { type: string, format: uuid },
+      }
+    ArtistIdQuery:
+      { name: artistId, in: query, schema: { type: string, format: uuid } }
+    VenueIdQuery:
+      { name: venueId, in: query, schema: { type: string, format: uuid } }
+    VenueIdPath:
+      {
+        name: venueId,
+        in: path,
+        required: true,
+        schema: { type: string, format: uuid },
+      }
+    Search:
+      { name: search, in: query, schema: { type: string, maxLength: 100 } }
+    Suburb: { name: suburb, in: query, schema: { type: string } }
+    Genre:
+      {
+        name: genre,
+        in: query,
+        schema:
+          {
+            type: string,
+            enum: [rock, indie, folk, electronic, jazz, punk, pop, country],
+          },
+      }
+    Status:
+      {
+        name: status,
+        in: query,
+        schema:
+          { type: string, enum: [available, limited, sold-out, cancelled] },
+      }
+    From: { name: from, in: query, schema: { type: string, format: date-time } }
+    To: { name: to, in: query, schema: { type: string, format: date-time } }
+    Page:
+      {
+        name: page,
+        in: query,
+        schema: { type: integer, minimum: 1, default: 1 },
+      }
+    PageSize:
+      {
+        name: pageSize,
+        in: query,
+        schema: { type: integer, minimum: 1, maximum: 50, default: 9 },
+      }
+    Sort:
+      {
+        name: sort,
+        in: query,
+        schema: { type: string, enum: [date-asc, date-desc, price-asc] },
+      }
+    Weekend:
+      {
+        name: weekend,
+        in: path,
+        required: true,
+        description: Friday date for the planned weekend,
+        schema: { type: string, format: date },
+      }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        {
+          application/problem+json:
+            { schema: { $ref: "#/components/schemas/ProblemDetails" } },
+        }
+    Unauthorized:
+      description: Authentication required
+      content:
+        {
+          application/problem+json:
+            { schema: { $ref: "#/components/schemas/ProblemDetails" } },
+        }
+    Forbidden:
+      description: Insufficient permission
+      content:
+        {
+          application/problem+json:
+            { schema: { $ref: "#/components/schemas/ProblemDetails" } },
+        }
+    NotFound:
+      description: Resource not found
+      content:
+        {
+          application/problem+json:
+            { schema: { $ref: "#/components/schemas/ProblemDetails" } },
+        }
+    InternalError:
+      description: Unexpected server error
+      content:
+        {
+          application/problem+json:
+            { schema: { $ref: "#/components/schemas/ProblemDetails" } },
+        }
+  schemas:
+    Genre:
+      type: string
+      enum: [rock, indie, folk, electronic, jazz, punk, pop, country]
+    EventStatus:
+      type: string
+      enum: [available, limited, sold-out, cancelled]
+    ArtistSummary:
+      type: object
+      required: [id, name, genre, imageUrl]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        genre: { $ref: "#/components/schemas/Genre" }
+        imageUrl: { type: string, format: uri }
+    Artist:
+      allOf:
+        - $ref: "#/components/schemas/ArtistSummary"
+        - type: object
+          required: [bio, hometown]
+          properties:
+            bio: { type: string }
+            hometown: { type: string }
+            websiteUrl: { type: [string, "null"], format: uri }
+    VenueSummary:
+      type: object
+      required: [id, name, suburb, imageUrl]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        suburb: { type: string }
+        imageUrl: { type: string, format: uri }
+    Venue:
+      allOf:
+        - $ref: "#/components/schemas/VenueSummary"
+        - type: object
+          required: [address, description, capacity]
+          properties:
+            address: { type: string }
+            description: { type: string }
+            capacity: { type: integer, minimum: 1 }
+            websiteUrl: { type: [string, "null"], format: uri }
+    EventSummary:
+      type: object
+      required:
+        [
+          id,
+          name,
+          startsAt,
+          genre,
+          status,
+          price,
+          imageUrl,
+          artist,
+          venue,
+          featured,
+        ]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        startsAt: { type: string, format: date-time }
+        genre: { $ref: "#/components/schemas/Genre" }
+        status: { $ref: "#/components/schemas/EventStatus" }
+        price: { type: [number, "null"], minimum: 0 }
+        imageUrl: { type: string, format: uri }
+        artist: { $ref: "#/components/schemas/ArtistSummary" }
+        venue: { $ref: "#/components/schemas/VenueSummary" }
+        featured: { type: boolean }
+    Event:
+      allOf:
+        - $ref: "#/components/schemas/EventSummary"
+        - type: object
+          required: [description, doorsAt, ticketUrl, ageRestriction]
+          properties:
+            description: { type: string }
+            doorsAt: { type: string, format: date-time }
+            ticketUrl: { type: [string, "null"], format: uri }
+            ageRestriction: { type: string }
+    CurrentUser:
+      type: object
+      required: [id, name, email, initials, roles]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        email: { type: string, format: email }
+        avatarUrl: { type: [string, "null"], format: uri }
+        initials: { type: string }
+        roles:
+          type: array
+          items: { type: string, enum: [user, admin] }
+    Favourite:
+      type: object
+      required: [eventId, createdAt, event]
+      properties:
+        eventId: { type: string, format: uuid }
+        createdAt: { type: string, format: date-time }
+        event: { $ref: "#/components/schemas/EventSummary" }
+    WeekendPlanEntry:
+      type: object
+      required: [eventId, note, event]
+      properties:
+        eventId: { type: string, format: uuid }
+        note: { type: string }
+        event: { $ref: "#/components/schemas/EventSummary" }
+    WeekendPlan:
+      type: object
+      required: [weekend, entries]
+      properties:
+        weekend: { type: string, format: date }
+        entries:
+          type: array
+          items: { $ref: "#/components/schemas/WeekendPlanEntry" }
+    CreateEventRequest:
+      type: object
+      required:
+        [
+          name,
+          startsAt,
+          doorsAt,
+          genre,
+          status,
+          price,
+          imageUrl,
+          artistId,
+          venueId,
+          description,
+          ageRestriction,
+        ]
+      properties:
+        name: { type: string, minLength: 3, maxLength: 120 }
+        startsAt: { type: string, format: date-time }
+        doorsAt: { type: string, format: date-time }
+        genre: { $ref: "#/components/schemas/Genre" }
+        status: { $ref: "#/components/schemas/EventStatus" }
+        price: { type: [number, "null"], minimum: 0 }
+        imageUrl: { type: string, format: uri }
+        artistId: { type: string, format: uuid }
+        venueId: { type: string, format: uuid }
+        description: { type: string, minLength: 20 }
+        ticketUrl: { type: [string, "null"], format: uri }
+        ageRestriction: { type: string }
+        featured: { type: boolean, default: false }
+    UpdateEventRequest:
+      $ref: "#/components/schemas/CreateEventRequest"
+    AddWeekendPlanEntryRequest:
+      type: object
+      required: [eventId]
+      properties:
+        eventId: { type: string, format: uuid }
+        note: { type: string, maxLength: 500, default: "" }
+    UpdateWeekendPlanEntryRequest:
+      type: object
+      required: [note]
+      properties:
+        note: { type: string, maxLength: 500 }
+    PagedEvents:
+      type: object
+      required: [items, page, pageSize, totalItems, totalPages]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/EventSummary" }
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 1 }
+        totalItems: { type: integer, minimum: 0 }
+        totalPages: { type: integer, minimum: 0 }
+    ProblemDetails:
+      type: object
+      required: [type, title, status, detail]
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer, minimum: 400, maximum: 599 }
+        detail: { type: string }
+        instance: { type: string }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }

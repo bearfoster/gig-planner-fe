@@ -1,0 +1,44 @@
+import * as React from "react";
+import { cn } from "@/lib/utils";
+export const Input = React.forwardRef<
+  HTMLInputElement,
+  React.InputHTMLAttributes<HTMLInputElement>
+>(({ className, ...props }, ref) => (
+  <input
+    ref={ref}
+    className={cn(
+      "h-11 w-full rounded-xl border border-ink/20 bg-white px-3 text-sm placeholder:text-ink/45 focus:border-violet",
+      className,
+    )}
+    {...props}
+  />
+));
+Input.displayName = "Input";
+export const Select = React.forwardRef<
+  HTMLSelectElement,
+  React.SelectHTMLAttributes<HTMLSelectElement>
+>(({ className, ...props }, ref) => (
+  <select
+    ref={ref}
+    className={cn(
+      "h-11 w-full rounded-xl border border-ink/20 bg-white px-3 text-sm focus:border-violet",
+      className,
+    )}
+    {...props}
+  />
+));
+Select.displayName = "Select";
+export const Textarea = React.forwardRef<
+  HTMLTextAreaElement,
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>
+>(({ className, ...props }, ref) => (
+  <textarea
+    ref={ref}
+    className={cn(
+      "min-h-28 w-full rounded-xl border border-ink/20 bg-white p-3 text-sm focus:border-violet",
+      className,
+    )}
+    {...props}
+  />
+));
+Textarea.displayName = "Textarea";
