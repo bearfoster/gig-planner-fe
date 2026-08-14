@@ -27,9 +27,13 @@ change the agreed product boundaries.
 - [Permission matrix](./permission-matrix.md)
 - [Phased roadmap](./roadmap.md)
 - [Traceability checklist](./traceability.md)
+- [Execution plans](./execution/README.md)
 
 The consolidated documents summarize the detailed requirements; the detailed
 capability specifications remain authoritative when more context is needed.
+
+Execution plans translate roadmap phases into bounded implementation work. They
+do not override the product or architecture specifications.
 
 ## Existing system context
 
