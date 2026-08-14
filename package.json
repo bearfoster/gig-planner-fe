@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:fullstack": "bash scripts/dev-fullstack.sh",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",

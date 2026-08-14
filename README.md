@@ -30,18 +30,24 @@ Vite prints the local URL. Development uses `.env.development`, which enables th
 
 ## Commands
 
-| Command                | Purpose                                              |
-| ---------------------- | ---------------------------------------------------- |
-| `npm run dev`          | Start the development server                         |
-| `npm run build`        | Type-check and create a production build             |
-| `npm run preview`      | Preview the production build                         |
-| `npm run lint`         | Run ESLint                                           |
-| `npm run typecheck`    | Run TypeScript without emitting files                |
-| `npm test`             | Run Vitest component/integration tests               |
-| `npm run test:watch`   | Run Vitest in watch mode                             |
-| `npm run test:e2e`     | Run Playwright smoke journeys                        |
-| `npm run api:generate` | Generate the client from OpenAPI                     |
-| `npm run api:check`    | Regenerate and fail if the existing output was stale |
+| Command                 | Purpose                                              |
+| ----------------------- | ---------------------------------------------------- |
+| `npm run dev`           | Start the development server                         |
+| `npm run dev:fullstack` | Start the frontend and sibling .NET API together     |
+| `npm run build`         | Type-check and create a production build             |
+| `npm run preview`       | Preview the production build                         |
+| `npm run lint`          | Run ESLint                                           |
+| `npm run typecheck`     | Run TypeScript without emitting files                |
+| `npm test`              | Run Vitest component/integration tests               |
+| `npm run test:watch`    | Run Vitest in watch mode                             |
+| `npm run test:e2e`      | Run Playwright smoke journeys                        |
+| `npm run api:generate`  | Generate the client from OpenAPI                     |
+| `npm run api:check`     | Regenerate and fail if the existing output was stale |
+
+`dev:fullstack` expects `gig-planner-api-dotnet` beside this repository, starts
+the API on port 5090, waits for its health check, then starts Vite on port 5173.
+It stops both processes together. If needed, override `GIG_PLANNER_BACKEND_DIR`,
+`GIG_PLANNER_API_PORT`, or `GIG_PLANNER_FRONTEND_PORT`.
 
 Install Playwright’s browser once before the first E2E run:
 
