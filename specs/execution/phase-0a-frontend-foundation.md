@@ -117,7 +117,8 @@ rewrite unrelated files solely to make the move appear clean.
 ## Goal prompt
 
 ```text
-Implement Phase 0A exactly as specified in
+Before editing, read this entire execution plan and every document under “Read
+before editing.” Then implement Phase 0A exactly as specified in
 specs/execution/phase-0a-frontend-foundation.md. Treat specs/ and AGENTS.md as
 authoritative. Preserve existing member behavior and do not begin tenant or
 backend work. Continue until every completion criterion and applicable

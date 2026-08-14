@@ -134,7 +134,9 @@ At minimum:
 ## Goal prompt
 
 ```text
-Implement Phase 0B exactly as specified in the canonical frontend document
+Before editing, read this entire execution plan and every document under “Read
+before editing.” Then implement Phase 0B exactly as specified in the canonical
+frontend document
 ../gig-planner-fe/specs/execution/phase-0b-backend-foundation.md. Treat both
 repositories' AGENTS.md guidance and the linked specs as authoritative. Preserve
 the existing HTTP contract and do not begin Phase 1 workflows. Continue until

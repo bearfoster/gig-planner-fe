@@ -107,7 +107,8 @@ Combined:
 ## Goal prompt
 
 ```text
-Run the Phase 0 integration checkpoint exactly as specified in
+Before editing, read this entire execution plan and every specification it
+references. Then run the Phase 0 integration checkpoint exactly as specified in
 specs/execution/phase-0-integration-checkpoint.md after verifying that Phase 0A
 and 0B meet their independent entry gates. Treat specs/ and both AGENTS.md files
 as authoritative. Own the cross-repository OpenAPI, generation, startup, and CI

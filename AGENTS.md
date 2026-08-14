@@ -48,9 +48,10 @@
 
 - Implement roadmap work as vertical slices spanning contract, generated
   client, UI, telemetry, and tests where relevant.
-- Before a phase or substantial slice, create or update a concise execution plan
-  under `specs/execution/` that lists applicable traceability IDs and measurable
-  completion checks.
+- Before editing for a phase or substantial slice, read its entire execution
+  plan under `specs/execution/`, including every referenced prerequisite. Create
+  or update the plan first if it does not yet list applicable traceability IDs
+  and measurable completion checks.
 - Preserve unrelated working-tree changes. Inspect status before editing and
   stage only files belonging to the requested change.
 - Use `rg`/`rg --files` for repository search and `apply_patch` for authored
