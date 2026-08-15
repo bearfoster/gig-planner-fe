@@ -1,15 +1,25 @@
-# Sydney Gig Planner
+# Event Planner frontend workspace
 
-A polished React single-page application for discovering fictional live music events around Sydney, saving favourites and assembling a personal weekend plan. It includes artist and venue directories, event details, notes, a mock profile and a role-gated event administration area.
+This npm workspace contains the preserved Sydney Gig Planner member SPA and a
+separately runnable Event Planner admin shell.
 
 All dates, prices, ticket links and event details are deterministic fictional demonstration data.
+
+## Applications
+
+- `apps/member-web`: existing Vite, React Router, and TanStack Query SPA. Its
+  temporary `/admin` routes remain available until Phase 1 feature parity.
+- `apps/admin-web`: Next.js App Router administrative shell. It contains no
+  authentication, tenant selection, or administration workflows in Phase 0A.
+- `packages/api-client`: the sole home for Orval-generated models and clients.
+- `packages/ui`: intentionally small shared design tokens used by both apps.
 
 ## Architecture
 
 - React 19, TypeScript and Vite; client-rendered only.
 - React Router with lazy route modules.
 - OpenAPI 3.1 as the frontend/backend source of truth.
-- Orval-generated DTOs, Fetch client and TanStack Query hooks in `src/api/generated`. **Never edit generated files manually.**
+- Orval-generated DTOs, Fetch client and TanStack Query hooks in `packages/api-client/src/generated`. **Never edit generated files manually.**
 - TanStack Query for API/server state; URL search parameters for catalogue state; local React state for UI details; Context only for mock authentication.
 - MSW intercepts actual Fetch requests in development and tests. Page components never import fixture data.
 - Tailwind CSS with accessible shadcn-style Radix primitives, React Hook Form and Zod.
@@ -22,7 +32,6 @@ Use Node.js 22 or newer and npm 10 or newer.
 
 ```bash
 npm install
-npm run api:generate
 npm run dev
 ```
 
@@ -32,10 +41,11 @@ Vite prints the local URL. Development uses `.env.development`, which enables th
 
 | Command                 | Purpose                                              |
 | ----------------------- | ---------------------------------------------------- |
-| `npm run dev`           | Start the development server                         |
-| `npm run dev:fullstack` | Start the frontend and sibling .NET API together     |
-| `npm run build`         | Type-check and create a production build             |
-| `npm run preview`       | Preview the production build                         |
+| `npm run dev`           | Start member and admin web applications              |
+| `npm run dev:member`    | Start only the Vite member application (port 5173)   |
+| `npm run dev:admin`     | Start only the Next.js admin shell (port 3000)       |
+| `npm run dev:fullstack` | Start both web applications and sibling .NET API     |
+| `npm run build`         | Type-check and build every emitting workspace        |
 | `npm run lint`          | Run ESLint                                           |
 | `npm run typecheck`     | Run TypeScript without emitting files                |
 | `npm test`              | Run Vitest component/integration tests               |
@@ -45,9 +55,10 @@ Vite prints the local URL. Development uses `.env.development`, which enables th
 | `npm run api:check`     | Regenerate and fail if the existing output was stale |
 
 `dev:fullstack` expects `gig-planner-api-dotnet` beside this repository, starts
-the API on port 5090, waits for its health check, then starts Vite on port 5173.
-It stops both processes together. If needed, override `GIG_PLANNER_BACKEND_DIR`,
-`GIG_PLANNER_API_PORT`, or `GIG_PLANNER_FRONTEND_PORT`.
+the API on port 5090, then member web on 5173 and admin web on 3000. It stops
+the complete process group. Override `GIG_PLANNER_BACKEND_DIR`,
+`GIG_PLANNER_API_PORT`, `GIG_PLANNER_MEMBER_PORT`, or
+`GIG_PLANNER_ADMIN_PORT` when needed.
 
 Install Playwright’s browser once before the first E2E run:
 
@@ -57,7 +68,11 @@ npx playwright install chromium
 
 ## OpenAPI workflow
 
-The contract is `openapi/sydney-gig-planner.yaml`. Edit that file first, then run `npm run api:generate`. Orval configuration lives in `orval.config.ts`; set `OPENAPI_INPUT` to a backend contract URL or another file when generating against a different source:
+The temporary checked-in contract is
+`packages/api-client/openapi/sydney-gig-planner.yaml`. Run `npm run api:generate`
+after changing its authoritative source. Orval configuration lives in
+`packages/api-client/orval.config.ts`; set `OPENAPI_INPUT` to a backend contract
+URL or another file when generating:
 
 ```bash
 OPENAPI_INPUT=https://api.example.com/openapi/v1.json npm run api:generate

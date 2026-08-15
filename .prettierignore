@@ -1,5 +1,4 @@
-dist
-coverage
-playwright-report
-src/api/generated
-package-lock.json
+apps/admin-web/.next
+apps/member-web/dist
+packages/api-client/src/generated
+test-results

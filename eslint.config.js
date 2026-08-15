@@ -4,7 +4,17 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 
 export default tseslint.config(
-  { ignores: ["dist", "coverage", "playwright-report", "src/api/generated"] },
+  {
+    ignores: [
+      "dist",
+      "coverage",
+      "playwright-report",
+      "apps/member-web/dist",
+      "apps/member-web/coverage",
+      "apps/member-web/playwright-report",
+      "packages/api-client/src/generated",
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -30,7 +40,11 @@ export default tseslint.config(
     },
   },
   {
-    files: ["scripts/**/*.mjs", "eslint.config.js"],
+    files: [
+      "scripts/**/*.mjs",
+      "packages/api-client/**/*.mjs",
+      "eslint.config.js",
+    ],
     languageOptions: { globals: { process: "readonly", console: "readonly" } },
   },
 );

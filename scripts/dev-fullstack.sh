@@ -7,12 +7,15 @@ backend_dir="${GIG_PLANNER_BACKEND_DIR:-$(cd "$frontend_dir/.." && pwd)/gig-plan
 backend_project="$backend_dir/src/GigPlanner.Api/GigPlanner.Api.csproj"
 
 api_port="${GIG_PLANNER_API_PORT:-5090}"
-frontend_port="${GIG_PLANNER_FRONTEND_PORT:-5173}"
+member_port="${GIG_PLANNER_MEMBER_PORT:-5173}"
+admin_port="${GIG_PLANNER_ADMIN_PORT:-3000}"
 api_url="http://localhost:$api_port"
-frontend_url="http://localhost:$frontend_port"
+member_url="http://localhost:$member_port"
+admin_url="http://localhost:$admin_port"
 
 backend_pid=""
-frontend_pid=""
+member_pid=""
+admin_pid=""
 
 fail() {
   printf 'Error: %s\n' "$*" >&2
@@ -40,9 +43,11 @@ stop_process() {
 
 cleanup() {
   trap - EXIT INT TERM
-  stop_process "$frontend_pid"
+  stop_process "$member_pid"
+  stop_process "$admin_pid"
   stop_process "$backend_pid"
-  [[ -z "$frontend_pid" ]] || wait "$frontend_pid" 2>/dev/null || true
+  [[ -z "$member_pid" ]] || wait "$member_pid" 2>/dev/null || true
+  [[ -z "$admin_pid" ]] || wait "$admin_pid" 2>/dev/null || true
   [[ -z "$backend_pid" ]] || wait "$backend_pid" 2>/dev/null || true
 }
 
@@ -84,13 +89,14 @@ require_command npm
 [[ -d "$frontend_dir/node_modules" ]] || fail "Frontend dependencies are missing. Run 'npm install' first."
 
 require_free_port "$api_port" "Backend"
-require_free_port "$frontend_port" "Frontend"
+require_free_port "$member_port" "Member web"
+require_free_port "$admin_port" "Admin web"
 
 printf 'Starting backend at %s\n' "$api_url"
 (
   cd "$backend_dir"
   exec env ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS="$api_url" \
-    Cors__AllowedOrigins__0="$frontend_url" DOTNET_NOLOGO=1 \
+    Cors__AllowedOrigins__0="$member_url" Cors__AllowedOrigins__1="$admin_url" DOTNET_NOLOGO=1 \
     dotnet run --project "$backend_project" --no-launch-profile
 ) &
 backend_pid=$!
@@ -98,19 +104,26 @@ backend_pid=$!
 wait_for_url "$api_url/health" "$backend_pid" "Backend"
 printf 'Backend is ready.\n'
 
-printf 'Starting frontend at %s\n' "$frontend_url"
+printf 'Starting member web at %s\n' "$member_url"
 (
   cd "$frontend_dir"
   exec env VITE_ENABLE_MOCK_API=false VITE_API_BASE_URL="$api_url" \
-    npm run dev -- --host localhost --port "$frontend_port" --strictPort
+    npm run dev:member
 ) &
-frontend_pid=$!
+member_pid=$!
 
-wait_for_url "$frontend_url" "$frontend_pid" "Frontend"
-printf '\nFull stack is ready:\n  Frontend: %s\n  Backend:  %s\n\nPress Ctrl+C to stop both servers.\n' \
-  "$frontend_url" "$api_url"
+wait_for_url "$member_url" "$member_pid" "Member web"
+printf 'Starting admin web at %s\n' "$admin_url"
+(
+  cd "$frontend_dir"
+  exec npm run dev:admin
+) &
+admin_pid=$!
+wait_for_url "$admin_url" "$admin_pid" "Admin web"
+printf '\nFull stack is ready:\n  Member: %s\n  Admin:  %s\n  Backend: %s\n\nPress Ctrl+C to stop all processes.\n' \
+  "$member_url" "$admin_url" "$api_url"
 
-while kill -0 "$backend_pid" >/dev/null 2>&1 && kill -0 "$frontend_pid" >/dev/null 2>&1; do
+while kill -0 "$backend_pid" >/dev/null 2>&1 && kill -0 "$member_pid" >/dev/null 2>&1 && kill -0 "$admin_pid" >/dev/null 2>&1; do
   sleep 1
 done
 
@@ -121,12 +134,18 @@ if ! kill -0 "$backend_pid" >/dev/null 2>&1; then
   exit_status=$?
   set -e
   printf 'Backend exited; stopping frontend.\n' >&2
-else
+elif ! kill -0 "$member_pid" >/dev/null 2>&1; then
   set +e
-  wait "$frontend_pid"
+  wait "$member_pid"
   exit_status=$?
   set -e
-  printf 'Frontend exited; stopping backend.\n' >&2
+  printf 'Member web exited; stopping remaining processes.\n' >&2
+else
+  set +e
+  wait "$admin_pid"
+  exit_status=$?
+  set -e
+  printf 'Admin web exited; stopping remaining processes.\n' >&2
 fi
 
 ((exit_status == 0)) && exit_status=1
