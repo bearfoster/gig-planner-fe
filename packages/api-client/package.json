@@ -1,0 +1,20 @@
+{
+  "name": "@gig-planner/api-client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/fetcher.ts",
+    "./generated/*": "./src/generated/*"
+  },
+  "scripts": {
+    "generate": "orval --config orval.config.ts",
+    "refresh": "node scripts/api-sync.mjs refresh",
+    "check": "node scripts/api-sync.mjs check",
+    "typecheck": "tsc --noEmit --pretty false",
+    "build": "tsc --noEmit --pretty false"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.101.4"
+  }
+}

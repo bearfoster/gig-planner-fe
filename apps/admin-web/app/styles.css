@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--gp-grey-100);
+  color: var(--gp-black);
+  font-family: Arial, Helvetica, sans-serif;
+}
+.shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+.masthead {
+  border-bottom: 2px solid var(--gp-black);
+  padding-bottom: 24px;
+}
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--gp-grey-700);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+h1,
+h2 {
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+h1 {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+}
+.panel {
+  margin-top: 32px;
+  border: 1px solid var(--gp-grey-300);
+  background: var(--gp-white);
+  padding: 24px;
+}
+.panel p {
+  max-width: 58ch;
+  line-height: 1.55;
+}
