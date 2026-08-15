@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useListFavourites } from "@gig-planner/api-client/generated/favourites/favourites";
+import { useListFavourites } from "@gig-planner/api-client/generated/user/user";
 import { Button } from "@/components/ui/button";
 import { EmptyState, ErrorState, LoadingState } from "@/components/AsyncState";
 import { EventGrid } from "@/features/events/EventCard";

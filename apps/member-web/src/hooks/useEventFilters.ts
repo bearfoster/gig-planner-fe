@@ -1,9 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import type {
-  Genre,
-  EventStatus,
-  ListEventsParams,
-} from "@gig-planner/api-client/generated/models";
+import type { ListEventsParams } from "@gig-planner/api-client/generated/models";
 
 export function useEventFilters() {
   const [params, setParams] = useSearchParams();
@@ -11,8 +7,8 @@ export function useEventFilters() {
     search: params.get("search") || undefined,
     suburb: params.get("suburb") || undefined,
     venueId: params.get("venueId") || undefined,
-    genre: (params.get("genre") as Genre) || undefined,
-    status: (params.get("status") as EventStatus) || undefined,
+    genre: params.get("genre") || undefined,
+    status: params.get("status") || undefined,
     from: params.get("from") || undefined,
     to: params.get("to") || undefined,
     page: Number(params.get("page") || 1),

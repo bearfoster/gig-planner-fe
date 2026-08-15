@@ -1,10 +1,16 @@
-import type { ProblemDetails } from "./generated/models";
+import type {
+  HttpValidationProblemDetails,
+  ProblemDetails,
+} from "./generated/models";
+
+type ApiProblemDetails = ProblemDetails &
+  Pick<HttpValidationProblemDetails, "errors">;
 
 export class ApiError extends Error {
   status: number;
-  problem: ProblemDetails;
-  constructor(status: number, problem: ProblemDetails) {
-    super(problem.detail || problem.title);
+  problem: ApiProblemDetails;
+  constructor(status: number, problem: ApiProblemDetails) {
+    super(problem.detail || problem.title || "Request failed");
     this.name = "ApiError";
     this.status = status;
     this.problem = problem;
@@ -34,7 +40,7 @@ export async function apiFetch<T>(
   });
 
   if (!response.ok) {
-    const fallback: ProblemDetails = {
+    const fallback: ApiProblemDetails = {
       type: "about:blank",
       title: response.statusText || "Request failed",
       status: response.status,
@@ -42,7 +48,7 @@ export async function apiFetch<T>(
     };
     const problem = (await response
       .json()
-      .catch(() => fallback)) as ProblemDetails;
+      .catch(() => fallback)) as ApiProblemDetails;
     throw new ApiError(response.status, problem);
   }
 

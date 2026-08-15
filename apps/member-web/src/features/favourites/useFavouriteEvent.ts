@@ -1,14 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import type {
-  EventSummary,
-  Favourite,
+  EventSummaryDto as EventSummary,
+  FavouriteDto as Favourite,
 } from "@gig-planner/api-client/generated/models";
 import {
   getListFavouritesQueryKey,
   useAddFavourite,
   useListFavourites,
   useRemoveFavourite,
-} from "@gig-planner/api-client/generated/favourites/favourites";
+} from "@gig-planner/api-client/generated/user/user";
 import { toast } from "sonner";
 
 export function useFavouriteEvent(event: EventSummary) {

@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import type {
-  EventSummary,
-  WeekendPlan,
+  EventSummaryDto as EventSummary,
+  WeekendPlanDto as WeekendPlan,
 } from "@gig-planner/api-client/generated/models";
 import {
   getGetWeekendPlanQueryKey,
@@ -9,7 +9,7 @@ import {
   useGetWeekendPlan,
   useRemoveWeekendPlanEntry,
   useUpdateWeekendPlanEntry,
-} from "@gig-planner/api-client/generated/weekend-plans/weekend-plans";
+} from "@gig-planner/api-client/generated/user/user";
 import { currentWeekend } from "@/lib/utils";
 import { toast } from "sonner";
 

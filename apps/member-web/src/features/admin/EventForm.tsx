@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import type {
-  CreateEventRequest,
-  Event,
+  EventDto as Event,
+  SaveEventRequest,
 } from "@gig-planner/api-client/generated/models";
 import { useListArtists } from "@gig-planner/api-client/generated/artists/artists";
 import { useListVenues } from "@gig-planner/api-client/generated/venues/venues";
@@ -42,9 +42,9 @@ const defaults = (event?: Event): FormValues => ({
   venueId: event?.venue.id ?? "",
   startsAt: toLocal(event?.startsAt ?? ""),
   doorsAt: toLocal(event?.doorsAt ?? ""),
-  genre: event?.genre ?? "indie",
-  status: event?.status ?? "available",
-  price: event?.price ?? 35,
+  genre: (event?.genre as FormValues["genre"] | undefined) ?? "indie",
+  status: (event?.status as FormValues["status"] | undefined) ?? "available",
+  price: event?.price == null ? 35 : Number(event.price),
   imageUrl:
     event?.imageUrl ??
     "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80",
@@ -60,7 +60,7 @@ export function EventForm({
   apiErrors = {},
 }: {
   event?: Event;
-  onSubmit: (data: CreateEventRequest) => void;
+  onSubmit: (data: SaveEventRequest) => void;
   pending: boolean;
   apiErrors?: Record<string, string[]>;
 }) {

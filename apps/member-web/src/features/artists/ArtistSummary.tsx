@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { ArtistSummary as ArtistSummaryType } from "@gig-planner/api-client/generated/models";
+import type { ArtistSummaryDto as ArtistSummaryType } from "@gig-planner/api-client/generated/models";
 import { Card } from "@/components/ui/card";
 export function ArtistSummary({ artist }: { artist: ArtistSummaryType }) {
   return (

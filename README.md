@@ -39,24 +39,26 @@ Vite prints the local URL. Development uses `.env.development`, which enables th
 
 ## Commands
 
-| Command                 | Purpose                                              |
-| ----------------------- | ---------------------------------------------------- |
-| `npm run dev`           | Start member and admin web applications              |
-| `npm run dev:member`    | Start only the Vite member application (port 5173)   |
-| `npm run dev:admin`     | Start only the Next.js admin shell (port 3000)       |
-| `npm run dev:fullstack` | Start both web applications and sibling .NET API     |
-| `npm run build`         | Type-check and build every emitting workspace        |
-| `npm run lint`          | Run ESLint                                           |
-| `npm run typecheck`     | Run TypeScript without emitting files                |
-| `npm test`              | Run Vitest component/integration tests               |
-| `npm run test:watch`    | Run Vitest in watch mode                             |
-| `npm run test:e2e`      | Run Playwright smoke journeys                        |
-| `npm run api:generate`  | Generate the client from OpenAPI                     |
-| `npm run api:check`     | Regenerate and fail if the existing output was stale |
+| Command                 | Purpose                                            |
+| ----------------------- | -------------------------------------------------- |
+| `npm run dev`           | Start member and admin web applications            |
+| `npm run dev:member`    | Start only the Vite member application (port 5173) |
+| `npm run dev:admin`     | Start only the Next.js admin shell (port 3000)     |
+| `npm run dev:fullstack` | Start both web applications and sibling .NET API   |
+| `npm run build`         | Type-check and build every emitting workspace      |
+| `npm run lint`          | Run ESLint                                         |
+| `npm run typecheck`     | Run TypeScript without emitting files              |
+| `npm test`              | Run Vitest component/integration tests             |
+| `npm run test:watch`    | Run Vitest in watch mode                           |
+| `npm run test:e2e`      | Run Playwright smoke journeys                      |
+| `npm run test:e2e:real` | Run the same journeys against a fresh real API     |
+| `npm run api:generate`  | Generate the client from the checked-in snapshot   |
+| `npm run api:refresh`   | Export backend OpenAPI, copy it, and regenerate    |
+| `npm run api:check`     | Verify backend, snapshot, and client freshness     |
 
 `dev:fullstack` expects `gig-planner-api-dotnet` beside this repository, starts
-the API on port 5090, then member web on 5173 and admin web on 3000. It stops
-the complete process group. Override `GIG_PLANNER_BACKEND_DIR`,
+the API and idle Worker, then member web on port 5173 and admin web on 3000. It
+stops the complete process group. Override `GIG_PLANNER_BACKEND_DIR`,
 `GIG_PLANNER_API_PORT`, `GIG_PLANNER_MEMBER_PORT`, or
 `GIG_PLANNER_ADMIN_PORT` when needed.
 
@@ -68,17 +70,24 @@ npx playwright install chromium
 
 ## OpenAPI workflow
 
-The temporary checked-in contract is
-`packages/api-client/openapi/sydney-gig-planner.yaml`. Run `npm run api:generate`
-after changing its authoritative source. Orval configuration lives in
-`packages/api-client/orval.config.ts`; set `OPENAPI_INPUT` to a backend contract
-URL or another file when generating:
+The .NET-owned contract is `../gig-planner-api-dotnet/openapi/gig-planner-v1.json`.
+The frontend keeps an exact checked-in copy at
+`packages/api-client/openapi/gig-planner-v1.json` so installs and builds remain
+reproducible. Run `npm run api:refresh` after a backend contract change; it runs
+the backend exporter, copies that artifact, and regenerates the client. Set
+`GIG_PLANNER_BACKEND_DIR` when the backend is not in the default sibling path.
+
+Orval configuration lives in `packages/api-client/orval.config.ts`. The lower-
+level generation command can accept another input for diagnostics:
 
 ```bash
 OPENAPI_INPUT=https://api.example.com/openapi/v1.json npm run api:generate
 ```
 
-`api:check` snapshots the generated directory, runs generation and compares the output without requiring Git. It is suitable for CI after generated files are committed to a future repository.
+`api:check` first verifies deterministic backend export, compares the frontend
+snapshot byte-for-byte with the backend artifact, then regenerates and compares
+the client without relying on Git. CI checks out the coordinated backend
+integration branch and runs this same command.
 
 ## Mock API and authentication
 

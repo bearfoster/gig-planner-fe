@@ -11,6 +11,8 @@ export default function EventsPage() {
   const { filters, update, clear } = useEventFilters();
   const query = useListEvents(filters);
   const result = query.data;
+  const page = Number(result?.page ?? 1);
+  const totalPages = Number(result?.totalPages ?? 1);
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
       <header className="mb-9">
@@ -44,18 +46,18 @@ export default function EventsPage() {
           >
             <Button
               variant="outline"
-              disabled={result.page <= 1}
-              onClick={() => update({ page: result.page - 1 })}
+              disabled={page <= 1}
+              onClick={() => update({ page: page - 1 })}
             >
               Previous
             </Button>
             <span className="text-sm font-semibold">
-              Page {result.page} of {result.totalPages}
+              Page {page} of {totalPages}
             </span>
             <Button
               variant="outline"
-              disabled={result.page >= result.totalPages}
-              onClick={() => update({ page: result.page + 1 })}
+              disabled={page >= totalPages}
+              onClick={() => update({ page: page + 1 })}
             >
               Next
             </Button>

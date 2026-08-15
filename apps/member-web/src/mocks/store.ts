@@ -1,7 +1,7 @@
 import type {
-  Event,
-  Favourite,
-  WeekendPlanEntry,
+  EventDto as Event,
+  FavouriteDto as Favourite,
+  WeekendPlanEntryDto as WeekendPlanEntry,
 } from "@gig-planner/api-client/generated/models";
 import { eventFixtures } from "./fixtures";
 

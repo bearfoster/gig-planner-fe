@@ -4,9 +4,10 @@
  * GigPlanner.Api | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { EventSummaryDto } from './eventSummaryDto';
 
-export interface AddWeekendPlanEntryRequest {
+export interface FavouriteDto {
   eventId: string;
-  /** @nullable */
-  note?: string | null;
+  createdAt: string;
+  event: EventSummaryDto;
 }

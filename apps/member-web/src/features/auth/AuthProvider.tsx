@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { CurrentUser } from "@gig-planner/api-client/generated/models";
+import type { CurrentUserDto as CurrentUser } from "@gig-planner/api-client/generated/models";
 import {
   useGetCurrentUser,
   getGetCurrentUserQueryKey,

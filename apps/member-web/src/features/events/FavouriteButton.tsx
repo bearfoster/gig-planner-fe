@@ -1,5 +1,5 @@
 import { Heart } from "lucide-react";
-import type { EventSummary } from "@gig-planner/api-client/generated/models";
+import type { EventSummaryDto as EventSummary } from "@gig-planner/api-client/generated/models";
 import { useFavouriteEvent } from "@/features/favourites/useFavouriteEvent";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

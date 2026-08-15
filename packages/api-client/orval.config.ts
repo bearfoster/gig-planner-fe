@@ -1,6 +1,6 @@
 import { defineConfig } from "orval";
 
-const input = process.env.OPENAPI_INPUT ?? "./openapi/sydney-gig-planner.yaml";
+const input = process.env.OPENAPI_INPUT ?? "./openapi/gig-planner-v1.json";
 
 export default defineConfig({
   sydneyGigPlanner: {

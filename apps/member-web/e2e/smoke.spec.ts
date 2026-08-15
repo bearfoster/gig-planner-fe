@@ -18,6 +18,21 @@ test("browse events, apply a filter, and open an event", async ({ page }) => {
   ).toBeVisible();
   await expect(page.getByText("About this gig")).toBeVisible();
 });
+test("browse artist and venue directory details", async ({ page }) => {
+  await page.goto("/artists");
+  await page.getByRole("heading", { name: "Paul Kelly" }).click();
+  await expect(page.getByRole("heading", { name: "Paul Kelly" })).toBeVisible();
+  await expect(page.getByText("Adelaide / Melbourne")).toBeVisible();
+
+  await page.goto("/venues");
+  await page.getByRole("heading", { name: "Enmore Theatre" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Enmore Theatre" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("118–132 Enmore Road, Newtown NSW"),
+  ).toBeVisible();
+});
 test("favourite an event and find it in favourites", async ({ page }) => {
   await page.goto(eventPath);
   await page

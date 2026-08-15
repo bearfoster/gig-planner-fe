@@ -1,7 +1,7 @@
 import type {
-  Artist,
-  Event,
-  Venue,
+  ArtistDto as Artist,
+  EventDto as Event,
+  VenueDto as Venue,
 } from "@gig-planner/api-client/generated/models";
 
 const image = (id: string) =>

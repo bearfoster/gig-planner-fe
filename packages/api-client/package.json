@@ -9,7 +9,8 @@
   },
   "scripts": {
     "generate": "orval --config orval.config.ts",
-    "check": "node scripts/api-check.mjs",
+    "refresh": "node scripts/api-sync.mjs refresh",
+    "check": "node scripts/api-sync.mjs check",
     "typecheck": "tsc --noEmit --pretty false",
     "build": "tsc --noEmit --pretty false"
   },

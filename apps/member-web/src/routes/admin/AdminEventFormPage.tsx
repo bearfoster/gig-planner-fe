@@ -9,7 +9,7 @@ import {
   useGetEvent,
   useUpdateEvent,
 } from "@gig-planner/api-client/generated/events/events";
-import type { CreateEventRequest } from "@gig-planner/api-client/generated/models";
+import type { SaveEventRequest } from "@gig-planner/api-client/generated/models";
 import { ApiError } from "@gig-planner/api-client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -42,7 +42,7 @@ export default function AdminEventFormPage() {
   const update = useUpdateEvent<ApiError>({
     mutation: { onSuccess: () => success("Event updated"), onError: failure },
   });
-  const submit = (data: CreateEventRequest) => {
+  const submit = (data: SaveEventRequest) => {
     setApiErrors({});
     if (eventId) update.mutate({ eventId, data });
     else create.mutate({ data });

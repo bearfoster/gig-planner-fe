@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start --hostname localhost --port 3000",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit --pretty false",
+    "typecheck": "next typegen && tsc --noEmit --pretty false",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {

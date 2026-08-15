@@ -1,4 +1,6 @@
 apps/admin-web/.next
 apps/member-web/dist
 packages/api-client/src/generated
+packages/api-client/openapi/gig-planner-v1.json
 test-results
+.integration

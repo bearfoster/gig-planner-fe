@@ -15,14 +15,14 @@ export const formatGigDate = (value: string) =>
     minute: "2-digit",
   }).format(new Date(value));
 
-export const formatPrice = (price: number | null) =>
+export const formatPrice = (price: number | string | null) =>
   price === null
     ? "Free"
     : new Intl.NumberFormat("en-AU", {
         style: "currency",
         currency: "AUD",
         maximumFractionDigits: 0,
-      }).format(price);
+      }).format(Number(price));
 
 export const currentWeekend = () => {
   const today = new Date();

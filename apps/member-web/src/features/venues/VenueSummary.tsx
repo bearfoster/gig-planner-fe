@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import type { VenueSummary as VenueSummaryType } from "@gig-planner/api-client/generated/models";
+import type { VenueSummaryDto as VenueSummaryType } from "@gig-planner/api-client/generated/models";
 import { Card } from "@/components/ui/card";
 export function VenueSummary({ venue }: { venue: VenueSummaryType }) {
   return (

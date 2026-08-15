@@ -20,7 +20,9 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "test:e2e": "npm run test:e2e --workspace @gig-planner/member-web",
+    "test:e2e:real": "bash scripts/test-real-api.sh",
     "api:generate": "npm run generate --workspace @gig-planner/api-client",
+    "api:refresh": "npm run refresh --workspace @gig-planner/api-client",
     "api:check": "npm run check --workspace @gig-planner/api-client"
   },
   "dependencies": {

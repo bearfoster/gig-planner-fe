@@ -4,8 +4,9 @@
  * GigPlanner.Api | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { HttpValidationProblemDetailsErrors } from './httpValidationProblemDetailsErrors';
 
-export interface ProblemDetails {
+export interface HttpValidationProblemDetails {
   /** @nullable */
   type?: string | null;
   /** @nullable */
@@ -19,4 +20,5 @@ export interface ProblemDetails {
   detail?: string | null;
   /** @nullable */
   instance?: string | null;
+  errors?: HttpValidationProblemDetailsErrors;
 }

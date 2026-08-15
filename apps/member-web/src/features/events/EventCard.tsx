@@ -1,6 +1,6 @@
 import { CalendarPlus, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import type { EventSummary } from "@gig-planner/api-client/generated/models";
+import type { EventSummaryDto as EventSummary } from "@gig-planner/api-client/generated/models";
 import { formatGigDate, formatPrice } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { FavouriteButton } from "./FavouriteButton";

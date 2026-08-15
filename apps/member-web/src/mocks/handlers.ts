@@ -1,9 +1,9 @@
 import { delay, http, HttpResponse } from "msw";
 import type {
-  CreateEventRequest,
-  Event,
-  EventSummary,
-  ProblemDetails,
+  EventDto as Event,
+  EventSummaryDto as EventSummary,
+  HttpValidationProblemDetails,
+  SaveEventRequest,
 } from "@gig-planner/api-client/generated/models";
 import { artistFixtures, venueFixtures } from "./fixtures";
 import { mockStore } from "./store";
@@ -16,7 +16,7 @@ const problem = (
   detail: string,
   errors?: Record<string, string[]>,
 ) =>
-  HttpResponse.json<ProblemDetails>(
+  HttpResponse.json<HttpValidationProblemDetails>(
     { type: "about:blank", title, status, detail, errors },
     { status, headers: { "Content-Type": "application/problem+json" } },
   );
@@ -63,7 +63,7 @@ export const handlers = [
       sort === "date-desc"
         ? b.startsAt.localeCompare(a.startsAt)
         : sort === "price-asc"
-          ? (a.price ?? 0) - (b.price ?? 0)
+          ? Number(a.price ?? 0) - Number(b.price ?? 0)
           : a.startsAt.localeCompare(b.startsAt),
     );
     const totalItems = items.length;
@@ -96,7 +96,7 @@ export const handlers = [
         "Admin access required",
         "Switch to the admin role to manage events.",
       );
-    const body = (await request.json()) as CreateEventRequest;
+    const body = (await request.json()) as SaveEventRequest;
     const errors: Record<string, string[]> = {};
     if (!body.name || body.name.length < 3)
       errors.name = ["Name must contain at least 3 characters."];
@@ -137,7 +137,7 @@ export const handlers = [
     );
     if (!current)
       return problem(404, "Event not found", "The event no longer exists.");
-    const body = (await request.json()) as CreateEventRequest;
+    const body = (await request.json()) as SaveEventRequest;
     const artist = artistFixtures.find((a) => a.id === body.artistId);
     const venue = venueFixtures.find((v) => v.id === body.venueId);
     if (!artist || !venue)

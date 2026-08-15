@@ -5,6 +5,7 @@ set -Eeuo pipefail
 frontend_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 backend_dir="${GIG_PLANNER_BACKEND_DIR:-$(cd "$frontend_dir/.." && pwd)/gig-planner-api-dotnet}"
 backend_project="$backend_dir/src/GigPlanner.Api/GigPlanner.Api.csproj"
+worker_project="$backend_dir/src/GigPlanner.Worker/GigPlanner.Worker.csproj"
 
 api_port="${GIG_PLANNER_API_PORT:-5090}"
 member_port="${GIG_PLANNER_MEMBER_PORT:-5173}"
@@ -14,6 +15,7 @@ member_url="http://localhost:$member_port"
 admin_url="http://localhost:$admin_port"
 
 backend_pid=""
+worker_pid=""
 member_pid=""
 admin_pid=""
 
@@ -45,9 +47,11 @@ cleanup() {
   trap - EXIT INT TERM
   stop_process "$member_pid"
   stop_process "$admin_pid"
+  stop_process "$worker_pid"
   stop_process "$backend_pid"
   [[ -z "$member_pid" ]] || wait "$member_pid" 2>/dev/null || true
   [[ -z "$admin_pid" ]] || wait "$admin_pid" 2>/dev/null || true
+  [[ -z "$worker_pid" ]] || wait "$worker_pid" 2>/dev/null || true
   [[ -z "$backend_pid" ]] || wait "$backend_pid" 2>/dev/null || true
 }
 
@@ -85,6 +89,7 @@ require_command npm
 
 [[ -f "$backend_project" ]] || fail \
   "Backend project not found at $backend_project. Set GIG_PLANNER_BACKEND_DIR if it is elsewhere."
+[[ -f "$worker_project" ]] || fail "Worker project not found at $worker_project."
 [[ -f "$frontend_dir/package.json" ]] || fail "Frontend package.json was not found at $frontend_dir."
 [[ -d "$frontend_dir/node_modules" ]] || fail "Frontend dependencies are missing. Run 'npm install' first."
 
@@ -104,6 +109,15 @@ backend_pid=$!
 wait_for_url "$api_url/health" "$backend_pid" "Backend"
 printf 'Backend is ready.\n'
 
+printf 'Starting idle worker.\n'
+(
+  cd "$backend_dir"
+  exec env DOTNET_NOLOGO=1 dotnet run --project "$worker_project" --no-launch-profile
+) &
+worker_pid=$!
+sleep 1
+kill -0 "$worker_pid" >/dev/null 2>&1 || fail "Worker exited before becoming ready."
+
 printf 'Starting member web at %s\n' "$member_url"
 (
   cd "$frontend_dir"
@@ -120,10 +134,10 @@ printf 'Starting admin web at %s\n' "$admin_url"
 ) &
 admin_pid=$!
 wait_for_url "$admin_url" "$admin_pid" "Admin web"
-printf '\nFull stack is ready:\n  Member: %s\n  Admin:  %s\n  Backend: %s\n\nPress Ctrl+C to stop all processes.\n' \
+printf '\nFull stack is ready:\n  Member: %s\n  Admin:  %s\n  Backend: %s\n  Worker: idle\n\nPress Ctrl+C to stop all processes.\n' \
   "$member_url" "$admin_url" "$api_url"
 
-while kill -0 "$backend_pid" >/dev/null 2>&1 && kill -0 "$member_pid" >/dev/null 2>&1 && kill -0 "$admin_pid" >/dev/null 2>&1; do
+while kill -0 "$backend_pid" >/dev/null 2>&1 && kill -0 "$worker_pid" >/dev/null 2>&1 && kill -0 "$member_pid" >/dev/null 2>&1 && kill -0 "$admin_pid" >/dev/null 2>&1; do
   sleep 1
 done
 
@@ -134,6 +148,12 @@ if ! kill -0 "$backend_pid" >/dev/null 2>&1; then
   exit_status=$?
   set -e
   printf 'Backend exited; stopping frontend.\n' >&2
+elif ! kill -0 "$worker_pid" >/dev/null 2>&1; then
+  set +e
+  wait "$worker_pid"
+  exit_status=$?
+  set -e
+  printf 'Worker exited; stopping remaining processes.\n' >&2
 elif ! kill -0 "$member_pid" >/dev/null 2>&1; then
   set +e
   wait "$member_pid"
